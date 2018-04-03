@@ -61,7 +61,6 @@ public class JsonReaderImpl implements JsonReader {
         return JsonStructure.class.cast(readValue());
     }
 
-    @Override
     public JsonValue readValue() {
         checkClosed();
 

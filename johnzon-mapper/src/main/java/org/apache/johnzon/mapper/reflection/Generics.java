@@ -54,7 +54,7 @@ public final class Generics {
             final Type type = resolve(arg, rootClass);
             if (type != arg) {
                 if (args == null) {
-                    args = new ArrayList<>();
+                    args = new ArrayList<Type>();
                     if (index > 0) {
                         args.addAll(asList(parameterizedType.getActualTypeArguments()).subList(0, index));
                     }

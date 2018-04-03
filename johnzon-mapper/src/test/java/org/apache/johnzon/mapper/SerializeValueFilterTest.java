@@ -31,7 +31,13 @@ public class SerializeValueFilterTest {
     @Test
     public void customIgnore() {
         // in this test we will serialize lists but not sets or other collection impls
-        final Mapper mapper = new MapperBuilder().setSerializeValueFilter((name, value) -> !List.class.isInstance(value)).build();
+        final Mapper mapper = new MapperBuilder().setSerializeValueFilter(new SerializeValueFilter() {
+            @Override
+            public boolean shouldIgnore(String name, Object value) {
+                return !List.class.isInstance(value);
+            }
+        }).build();
+
         assertEquals("{\"list\":[\"test\"]}", mapper.writeObjectAsString(new Foo(singletonList("test"))));
         assertEquals("{}", mapper.writeObjectAsString(new Foo(singleton("test"))));
     }

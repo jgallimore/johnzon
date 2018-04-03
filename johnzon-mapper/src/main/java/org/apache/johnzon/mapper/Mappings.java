@@ -137,7 +137,7 @@ public class Mappings {
             this.array = array;
             this.collection = collection;
             this.primitive = primitive;
-            this.ignoreNested = ignoreNested == null || ignoreNested.length == 0 ? null : new HashSet<>(asList(ignoreNested));
+            this.ignoreNested = ignoreNested == null || ignoreNested.length == 0 ? null : new HashSet<String>(asList(ignoreNested));
 
             Adapter theConverter = null;
             Adapter theItemConverter = null;
@@ -367,8 +367,8 @@ public class Mappings {
         Comparator<String> fieldComparator = accessMode.fieldComparator(inClazz);
         fieldComparator = fieldComparator == null ? config.getAttributeOrder() : fieldComparator;
 
-        final Map<String, Getter> getters = fieldComparator == null ? newOrderedMap(Getter.class) : new TreeMap<>(fieldComparator);
-        final Map<String, Setter> setters = fieldComparator == null ? newOrderedMap(Setter.class) : new TreeMap<>(fieldComparator);
+        final Map<String, Getter> getters = fieldComparator == null ? newOrderedMap(Getter.class) : new TreeMap<String, Getter>(fieldComparator);
+        final Map<String, Setter> setters = fieldComparator == null ? newOrderedMap(Setter.class) : new TreeMap<String, Setter>(fieldComparator);
 
         final Map<String, AccessMode.Reader> readers = accessMode.findReaders(clazz);
         final Map<String, AccessMode.Writer> writers = accessMode.findWriters(clazz);

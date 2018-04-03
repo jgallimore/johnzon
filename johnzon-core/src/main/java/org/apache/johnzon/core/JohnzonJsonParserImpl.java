@@ -17,13 +17,6 @@
 package org.apache.johnzon.core;
 
 
-import java.util.Map;
-import java.util.stream.Stream;
-
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
-
 /**
  * Base parser which handles higher level operations which are
  * mixtures of Reader and Parsers like {@code getObject(), getValue(), getArray()}
@@ -35,96 +28,4 @@ public abstract class JohnzonJsonParserImpl implements JohnzonJsonParser {
      */
     protected abstract boolean isInArray();
 
-    @Override
-    public JsonObject getObject() {
-        Event current = current();
-        if (current != Event.START_OBJECT) {
-            throw new IllegalStateException(current + " doesn't support getObject()");
-        }
-
-        JsonReaderImpl jsonReader = new JsonReaderImpl(this, true);
-        return jsonReader.readObject();
-    }
-
-
-    @Override
-    public JsonArray getArray() {
-        Event current = current();
-        if (current != Event.START_ARRAY) {
-            throw new IllegalStateException(current + " doesn't support getArray()");
-        }
-
-        JsonReaderImpl jsonReader = new JsonReaderImpl(this, true);
-        return jsonReader.readArray();
-    }
-
-    @Override
-    public JsonValue getValue() {
-        Event current = current();
-        if (current != Event.START_ARRAY && current != Event.START_OBJECT) {
-            throw new IllegalStateException(current + " doesn't support getArray()");
-        }
-
-        JsonReaderImpl jsonReader = new JsonReaderImpl(this, true);
-        return jsonReader.readValue();
-    }
-
-    @Override
-    public void skipObject() {
-        int level = 1;
-        do {
-            Event event = next();
-            if (event == Event.START_OBJECT) {
-                level++;
-            } else if (event == Event.END_OBJECT) {
-                level --;
-            }
-        } while (level > 0 && hasNext());
-    }
-
-    @Override
-    public void skipArray() {
-        if (isInArray()) {
-            int level = 1;
-            do {
-                Event event = next();
-                if (event == Event.START_ARRAY) {
-                    level++;
-                } else if (event == Event.END_ARRAY) {
-                    level--;
-                }
-            } while (level > 0 && hasNext());
-        }
-    }
-
-    @Override
-    public Stream<JsonValue> getArrayStream() {
-        //X TODO this implementation is very simplistic
-        //X I find it unintuitive what the spec intends here
-        //X we probably need to improve this
-        return getArray().stream();
-    }
-
-    @Override
-    public Stream<Map.Entry<String, JsonValue>> getObjectStream() {
-        //X TODO this implementation is very simplistic
-        //X I find it unintuitive what the spec intends here
-        //X we probably need to improve this
-        return getObject().entrySet().stream();
-    }
-
-    @Override
-    public Stream<JsonValue> getValueStream() {
-        //X TODO this implementation is very simplistic
-        //X I find it unintuitive what the spec intends here
-        //X we probably need to improve this
-        Event current = current();
-        if (current  == Event.START_ARRAY) {
-            return getArrayStream();
-        }
-        if (current  == Event.START_OBJECT) {
-            return getObject().values().stream();
-        }
-        throw new IllegalStateException(current + " doesn't support getValueStream");
-    }
 }

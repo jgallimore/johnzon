@@ -168,7 +168,7 @@ public class MapperTest {
                 return o2.compareTo(o1);
             }
         }).build();
-        final Map<String, String> sorted = new TreeMap<>(new Comparator<String>() {
+        final Map<String, String> sorted = new TreeMap<String, String>(new Comparator<String>() {
             @Override
             public int compare(final String o1, final String o2) {
                 return o1.compareTo(o2);
@@ -178,7 +178,7 @@ public class MapperTest {
         sorted.put("b", "2");
         sorted.put("c", "3");
         assertEquals("{\"a\":\"1\",\"b\":\"2\",\"c\":\"3\"}", sortedMapper.writeObjectAsString(sorted));
-        assertEquals(asList("c", "b", "a"), new ArrayList<>(Map.class.cast(
+        assertEquals(asList("c", "b", "a"), new ArrayList<Object>(Map.class.cast(
                 sortedMapper.readObject("{\"a\":\"1\",\"b\":\"2\",\"c\":\"3\"}",
                         new JohnzonParameterizedType(SortedMap.class, String.class, String.class))).keySet()));
     }
@@ -209,7 +209,7 @@ public class MapperTest {
             assertEquals(Boolean.TRUE, simpleMapper.readObject(new ByteArrayInputStream("true".getBytes()), Object.class));
             assertEquals(Boolean.FALSE, simpleMapper.readObject(new ByteArrayInputStream("false".getBytes()), Object.class));
             assertEquals(1.,
-                         encodingAwareMapper.readObject(new ByteArrayInputStream("1".getBytes()), Object.class),
+                    (Double) encodingAwareMapper.readObject(new ByteArrayInputStream("1".getBytes()), Object.class),
                          0.1);
             assertEquals("val", simpleMapper.readObject(new ByteArrayInputStream("\"val\"".getBytes()), Object.class));
             assertEquals(asList("val1", "val2"), simpleMapper.readObject(new ByteArrayInputStream("[\"val1\", \"val2\"]".getBytes()), Object.class));

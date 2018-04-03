@@ -19,7 +19,6 @@
 package org.apache.johnzon.core;
 
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonException;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
@@ -31,49 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 class JsonObjectBuilderImpl implements JsonObjectBuilder, Serializable {
-    private Map<String, JsonValue> attributeMap = new LinkedHashMap<>();
-
-    public JsonObjectBuilderImpl() {
-    }
-
-    public JsonObjectBuilderImpl(JsonObject initialData) {
-        attributeMap = new LinkedHashMap<>(initialData);
-    }
-
-    public JsonObjectBuilderImpl(Map<String, Object> initialValues) {
-        this();
-        for (Map.Entry<String, Object> entry : initialValues.entrySet()) {
-            add(entry.getKey(), entry.getValue());
-        }
-    }
-
-
-    /**
-     * Internal method to add a value where we do not yet know the type at compile time.
-     */
-    public void add(final String name, final Object value) {
-        if (value instanceof JsonValue) {
-            add(name, (JsonValue) value);
-        } else if (value instanceof BigDecimal) {
-            add(name, (BigDecimal) value);
-        } else if (value instanceof BigInteger) {
-            add(name, (BigInteger) value);
-        } else if (value instanceof Boolean) {
-            add(name, (boolean) value);
-        } else if (value instanceof Double) {
-            add(name, (double) value);
-        } else if (value instanceof Integer) {
-            add(name, (int) value);
-        } else if (value instanceof Long) {
-            add(name, (long) value);
-        } else if (value instanceof String) {
-            add(name, (String) value);
-        } else if (value == null) {
-            addNull(name);
-        } else {
-            throw new JsonException("Illegal JSON type! name=" + name + " type=" + value.getClass());
-        }
-    }
+    private Map<String, JsonValue> attributeMap = new LinkedHashMap<String, JsonValue>();
 
     @Override
     public JsonObjectBuilder add(final String name, final JsonValue value) {
@@ -138,18 +95,6 @@ class JsonObjectBuilderImpl implements JsonObjectBuilder, Serializable {
     @Override
     public JsonObjectBuilder add(final String name, final JsonArrayBuilder builder) {
         putValue(name, builder.build());
-        return this;
-    }
-
-    @Override
-    public JsonObjectBuilder addAll(JsonObjectBuilder builder) {
-        attributeMap.putAll(builder.build());
-        return this;
-    }
-
-    @Override
-    public JsonObjectBuilder remove(String name) {
-        attributeMap.remove(name);
         return this;
     }
 

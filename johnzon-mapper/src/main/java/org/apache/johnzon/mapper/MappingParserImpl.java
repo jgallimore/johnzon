@@ -18,6 +18,7 @@
  */
 package org.apache.johnzon.mapper;
 
+import org.apache.johnzon.core.JsonReaderImpl;
 import org.apache.johnzon.mapper.access.AccessMode;
 import org.apache.johnzon.mapper.converter.CharacterConverter;
 import org.apache.johnzon.mapper.converter.EnumConverter;
@@ -33,6 +34,7 @@ import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonStructure;
 import javax.json.JsonValue;
+import javax.xml.bind.DatatypeConverter;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -44,7 +46,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -106,13 +107,13 @@ public class MappingParserImpl implements MappingParser {
 
         this.jsonReader = jsonReader;
 
-        reverseAdaptersRegistry = new ConcurrentHashMap<>(config.getAdapters().size());
+        reverseAdaptersRegistry = new ConcurrentHashMap<Adapter<?, ?>, AdapterKey>(config.getAdapters().size());
 
 
         this.isDeduplicateObjects = isDeduplicateObjects;
 
         if (isDeduplicateObjects) {
-            jsonPointers = new HashMap<>();
+            jsonPointers = new HashMap<String, Object>();
         } else {
             jsonPointers = Collections.emptyMap();
         }
@@ -121,10 +122,18 @@ public class MappingParserImpl implements MappingParser {
 
     @Override
     public <T> T readObject(Type targetType) {
+
         try {
-            return readObject(jsonReader.readValue(), targetType);
-        } catch (final NoSuchMethodError noSuchMethodError) { // jsonp 1.0 fallback - mainly for tests
+            if (jsonReader.getClass().getName().equals("org.apache.johnzon.core.JsonReaderImpl")) {
+                // later in JSON-P 1.1 we can remove this hack again
+                return readObject(((JsonReaderImpl) jsonReader).readValue(), targetType);
+            }
+
             return readObject(jsonReader.read(), targetType);
+        } finally {
+            if (config.isClose()) {
+                jsonReader.close();
+            }
         }
     }
 
@@ -478,10 +487,10 @@ public class MappingParserImpl implements MappingParser {
         }
 
         if (config.isTreatByteArrayAsBase64() && jsonValue.getValueType() == JsonValue.ValueType.STRING && (type == byte[].class /*|| type == Byte[].class*/)) {
-            return Base64.getDecoder().decode(((JsonString) jsonValue).getString());
+            return DatatypeConverter.parseBase64Binary(((JsonString)jsonValue).getString());
         }
         if (config.isTreatByteArrayAsBase64URL() && jsonValue.getValueType() == JsonValue.ValueType.STRING && (type == byte[].class /*|| type == Byte[].class*/)) {
-            return Base64.getUrlDecoder().decode(((JsonString) jsonValue).getString());
+            return DatatypeConverter.parseBase64Binary(((JsonString)jsonValue).getString());
         }
 
         if (Object.class == type) { // handling specific types here to keep exception in standard handling
@@ -690,7 +699,7 @@ public class MappingParserImpl implements MappingParser {
             if (jsonValue instanceof JsonObject) {
                 return objectConverter.fromJson((JsonObject) jsonValue, type, this);
             } else if (jsonValue instanceof JsonArray) {
-                return buildArray(type, jsonValue.asJsonArray(), itemConverter, objectConverter, jsonPointer, rootType);
+                return buildArray(type, (JsonArray) jsonValue, itemConverter, objectConverter, jsonPointer, rootType);
             } else {
                 throw new UnsupportedOperationException("Array handling with ObjectConverter currently not implemented");
             }
@@ -702,7 +711,7 @@ public class MappingParserImpl implements MappingParser {
                     : convertTo(converter, jsonValue, jsonPointer);
         } catch (Exception e) {
             if (e instanceof MapperException) {
-                throw e;
+                throw (MapperException) e;
             }
             throw new MapperException(e);
         }

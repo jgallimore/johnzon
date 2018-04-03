@@ -189,7 +189,7 @@ public class CircularObjectsTest {
         private Person marriedTo;
         private Person mother;
         private Person father;
-        private List<Person> kids = new ArrayList<>();
+        private List<Person> kids = new ArrayList<Person>();
 
         public Person() {
         }
@@ -245,7 +245,7 @@ public class CircularObjectsTest {
         private DeduplicatedPerson marriedTo;
         private DeduplicatedPerson mother;
         private DeduplicatedPerson father;
-        private List<DeduplicatedPerson> kids = new ArrayList<>();
+        private List<DeduplicatedPerson> kids = new ArrayList<DeduplicatedPerson>();
 
         public DeduplicatedPerson() {
         }

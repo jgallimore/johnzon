@@ -30,7 +30,7 @@ public class JsonBuilderFactoryTest {
 
     @Test
     public void testCreateBuilderFactory() {
-        JsonBuilderFactory factory = Json.createBuilderFactory(Collections.emptyMap());
+        JsonBuilderFactory factory = Json.createBuilderFactory(Collections.EMPTY_MAP);
         JsonObject jsonObject = factory.createObjectBuilder().
                 add("name", "home").
                 add("city", "Vienna")

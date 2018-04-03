@@ -430,7 +430,6 @@ class JsonGeneratorImpl implements JsonGenerator, JsonChars, Serializable {
         return this;
     }
 
-    @Override
     public JsonGenerator writeKey(final String key) {
         final GeneratorState currentState = currentState();
         if (!currentState.acceptsKey) {
@@ -447,8 +446,6 @@ class JsonGeneratorImpl implements JsonGenerator, JsonChars, Serializable {
         state.push(GeneratorState.AFTER_KEY);
         return this;
     }
-
-
 
     @Override
     public void close() {

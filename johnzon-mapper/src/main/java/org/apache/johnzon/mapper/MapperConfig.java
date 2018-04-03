@@ -102,7 +102,13 @@ public /* DON'T MAKE IT HIDDEN */ class MapperConfig implements Cloneable {
         this.attributeOrder = attributeOrder;
         this.enforceQuoteString = enforceQuoteString;
         this.failOnUnknown = failOnUnknown;
-        this.serializeValueFilter = serializeValueFilter == null ? (name, value) -> false : serializeValueFilter;
+
+        this.serializeValueFilter = serializeValueFilter != null ? serializeValueFilter : new SerializeValueFilter() {
+            @Override
+            public boolean shouldIgnore(String name, Object value) {
+                return false;
+            }
+        };
 
         this.objectConverterWriterCache = new HashMap<Class<?>, ObjectConverter.Writer<?>>(objectConverterWriters.size());
         this.objectConverterReaderCache = new HashMap<Class<?>, ObjectConverter.Reader<?>>(objectConverterReaders.size());

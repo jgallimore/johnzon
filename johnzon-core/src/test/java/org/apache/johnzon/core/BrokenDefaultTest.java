@@ -16,14 +16,14 @@
  */
 package org.apache.johnzon.core;
 
-import static java.util.Collections.emptyMap;
 import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Queue;
 
 import javax.json.Json;
@@ -37,12 +37,15 @@ public class BrokenDefaultTest {
 
     @Test
     @Ignore("buggy but pushing to share the use case")
-    public void run() throws NoSuchFieldException, IllegalAccessException { // shouldnt fail by default
-        final JsonParserFactory factory = Json.createParserFactory(emptyMap());
+    public void run() throws NoSuchFieldException, IllegalAccessException, UnsupportedEncodingException { // shouldnt fail by default
+        final JsonParserFactory factory = Json.createParserFactory(Collections.EMPTY_MAP);
         final int length = 1024 * 1024;
         assertEquals(0, get(Queue.class, get(
                 BufferStrategy.BufferProvider.class, factory, "bufferProvider"), "queue").size());
-        try (final JsonParser parser = factory.createParser(newDynamicInput(length))) {
+
+        final JsonParser parser = factory.createParser(newDynamicInput(length));
+
+        try {
             int eventCount = 0;
             while (parser.hasNext()) {
                 eventCount++;
@@ -51,7 +54,10 @@ public class BrokenDefaultTest {
                     assertEquals(length, parser.getString().length());
                 }
             }
+        } finally {
+            parser.close();
         }
+
         assertEquals(1, get(Queue.class, get(
                 BufferStrategy.BufferProvider.class, factory, "bufferProvider"), "queue").size());
     }
@@ -73,12 +79,12 @@ public class BrokenDefaultTest {
         throw new IllegalAccessError(instance + " field: " + field);
     }
 
-    private InputStream newDynamicInput(final int size) {
+    private InputStream newDynamicInput(final int size) throws UnsupportedEncodingException {
         return new InputStream() {
 
-            private InputStream before = new ByteArrayInputStream("{\"key\":\"".getBytes(StandardCharsets.UTF_8));
+            private InputStream before = new ByteArrayInputStream("{\"key\":\"".getBytes("UTF-8"));
 
-            private InputStream after = new ByteArrayInputStream("\"}".getBytes(StandardCharsets.UTF_8));
+            private InputStream after = new ByteArrayInputStream("\"}".getBytes("UTF-8"));
 
             private int remaining = size;
 

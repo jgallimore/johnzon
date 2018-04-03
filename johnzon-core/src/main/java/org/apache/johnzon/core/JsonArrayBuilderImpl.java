@@ -20,203 +20,19 @@ package org.apache.johnzon.core;
 
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonException;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 class JsonArrayBuilderImpl implements JsonArrayBuilder, Serializable {
     private List<JsonValue> tmpList;
 
-    public JsonArrayBuilderImpl() {
-    }
-
-    public JsonArrayBuilderImpl(JsonArray initialData) {
-        tmpList = new ArrayList<>(initialData);
-    }
-
-    public JsonArrayBuilderImpl(Collection<?> initialData) {
-        tmpList = new ArrayList<>();
-        for (Object initialValue : initialData) {
-            add(initialValue);
-        }
-    }
-
     @Override
-    public JsonArrayBuilder addAll(final JsonArrayBuilder builder) {
-        builder.build().forEach(this::add);
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder add(final int index, final JsonValue value) {
-        addValue(index, value);
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder add(final int index, final String value) {
-        addValue(index, new JsonStringImpl(value));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder add(final int index, final BigDecimal value) {
-        addValue(index, new JsonNumberImpl(value));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder add(final int index, final BigInteger value) {
-        addValue(index, new JsonNumberImpl(new BigDecimal(value)));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder add(final int index, final int value) {
-        addValue(index, new JsonLongImpl(value));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder add(final int index, final long value) {
-        addValue(index, new JsonLongImpl(value));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder add(final int index, final double value) {
-        addValue(index, new JsonDoubleImpl(value));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder add(final int index, final boolean value) {
-        addValue(index, value ? JsonValue.TRUE : JsonValue.FALSE);
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder addNull(final int index) {
-        addValue(index, JsonValue.NULL);
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder add(final int index, final JsonObjectBuilder builder) {
-        addValue(index, builder.build());
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder add(final int index, final JsonArrayBuilder builder) {
-        addValue(index, builder.build());
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder set(final int index, final JsonValue value) {
-        setValue(index, value);
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder set(final int index, final String value) {
-        setValue(index, new JsonStringImpl(value));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder set(final int index, final BigDecimal value) {
-        setValue(index, new JsonNumberImpl(value));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder set(final int index, final BigInteger value) {
-        setValue(index, new JsonNumberImpl(new BigDecimal(value)));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder set(final int index, final int value) {
-        setValue(index, new JsonLongImpl(value));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder set(final int index, final long value) {
-        setValue(index, new JsonLongImpl(value));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder set(final int index, final double value) {
-        setValue(index, new JsonDoubleImpl(value));
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder set(final int index, final boolean value) {
-        setValue(index, value ? JsonValue.TRUE : JsonValue.FALSE);
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder setNull(final int index) {
-        setValue(index, JsonValue.NULL);
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder set(final int index, final JsonObjectBuilder builder) {
-        setValue(index, builder.build());
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder set(final int index, final JsonArrayBuilder builder) {
-        setValue(index, builder.build());
-        return this;
-    }
-
-    @Override
-    public JsonArrayBuilder remove(final int index) {
-        tmpList.remove(index);
-        return this;
-    }
-
-    public JsonArrayBuilder add(final Object value) {
-        if (value instanceof JsonValue) {
-            add((JsonValue) value);
-        } else if (value instanceof BigDecimal) {
-            add((BigDecimal) value);
-        } else if (value instanceof BigInteger) {
-            add((BigInteger) value);
-        } else if (value instanceof Boolean) {
-            add((boolean) value);
-        } else if (value instanceof Double) {
-            add((double) value);
-        } else if (value instanceof Integer) {
-            add((int) value);
-        } else if (value instanceof Long) {
-            add((long) value);
-        } else if (value instanceof String) {
-            add((String) value);
-        } else {
-            throw new JsonException("Illegal JSON type! type=" + value.getClass());
-        }
-
-        return this;
-    }
-
-        @Override
     public JsonArrayBuilder add(final JsonValue value) {
         addValue(value);
         return this;
@@ -281,13 +97,6 @@ class JsonArrayBuilderImpl implements JsonArrayBuilder, Serializable {
         addValue(builder.build());
         return this;
     }
-    
-    private void setValue(int idx, JsonValue value) {
-        if (value == null || tmpList == null) {
-            throw npe();
-        }
-        tmpList.set(idx, value);
-    }
 
     private void addValue(JsonValue value) {
         if (value == null) {
@@ -295,28 +104,16 @@ class JsonArrayBuilderImpl implements JsonArrayBuilder, Serializable {
         }
 
         if(tmpList==null){
-            tmpList=new ArrayList<>();
+            tmpList=new ArrayList<JsonValue>();
         }
 
         tmpList.add(value);
     }
 
-    private void addValue(int idx, JsonValue value) {
-        if (value == null) {
-            throw npe();
-        }
-
-        if(tmpList==null){
-            tmpList=new ArrayList<>();
-        }
-
-        tmpList.add(idx, value);
-    }
-
     @Override
     public JsonArray build() {
         if(tmpList == null) {
-            return new JsonArrayImpl(Collections.emptyList());
+            return new JsonArrayImpl(Collections.EMPTY_LIST);
         }
         return new JsonArrayImpl(Collections.unmodifiableList(tmpList));
     }

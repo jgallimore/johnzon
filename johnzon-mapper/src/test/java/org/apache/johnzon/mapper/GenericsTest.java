@@ -24,12 +24,21 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.superbiz.Model;
 
+import java.util.Comparator;
+
 public class GenericsTest {
     @Test
     public void typeVariableMultiLevel() {
         final String input = "{\"aalist\":[{\"detail\":\"something2\",\"name\":\"Na2\"}]," +
                 "\"childA\":{\"detail\":\"something\",\"name\":\"Na\"},\"childB\":{}}";
-        final Mapper mapper = new MapperBuilder().setAttributeOrder(String::compareTo).build();
+
+        final Mapper mapper = new MapperBuilder().setAttributeOrder(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        }).build();
+
         final Model model = mapper.readObject(input, Model.class);
         assertNotNull(model.getChildA());
         assertNotNull(model.getChildB());

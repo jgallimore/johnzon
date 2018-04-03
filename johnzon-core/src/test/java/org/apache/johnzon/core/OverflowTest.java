@@ -66,7 +66,7 @@ public class OverflowTest {
             put(JsonParserFactoryImpl.BUFFER_LENGTH, "256");
         }});
 
-        int itemSize = 50_000;
+        int itemSize = 50000;
 
         StringWriter sw = new StringWriter();
         JsonWriter writer = writerFactory.createWriter(sw);

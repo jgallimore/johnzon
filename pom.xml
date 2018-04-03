@@ -33,21 +33,21 @@
   <groupId>org.apache.johnzon</groupId>
   <artifactId>johnzon</artifactId>
   <packaging>pom</packaging>
-  <version>1.1.8-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
   <name>Apache Johnzon</name>
   <description>Apache Johnzon is an implementation of JSR-353 (JavaTM API for JSON Processing).</description>
   <inceptionYear>2014</inceptionYear>
   <url>http://johnzon.apache.org</url>
 
   <properties>
-    <geronimo-jsonp.version>1.0</geronimo-jsonp.version>
+    <jsonspecversion>1.0-alpha-1</jsonspecversion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <johnzon.site.url>https://svn.apache.org/repos/asf/johnzon/site/publish/</johnzon.site.url>
     <pubsub.url>scm:svn:${johnzon.site.url}</pubsub.url>
     <staging.directory>${project.build.directory}/site</staging.directory>
     <felix.plugin.version>2.5.3</felix.plugin.version>
     <bnd.version.policy>[$(version;==;$(@)),$(version;+;$(@)))</bnd.version.policy>
-    <java-compile.version>1.8</java-compile.version>
+    <java-compile.version>1.6</java-compile.version>
     <cxf.version>3.0.0</cxf.version>
     <javadoc.params /> <!-- for java 8 set disable doclint (by profile) -->
     <checkstyle.version>2.15</checkstyle.version> <!-- checkstyle > 2.15 version do not support java 6 -->
@@ -61,15 +61,13 @@
     <module>johnzon-jaxrs</module>
     <module>johnzon-distribution</module>
     <module>johnzon-maven-plugin</module>
-    <module>johnzon-websocket</module>
-    <module>johnzon-jsonb</module>
   </modules>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-json_1.1_spec</artifactId>
-      <version>${geronimo-jsonp.version}</version>
+      <artifactId>geronimo-json_1.0_spec</artifactId>
+      <version>${jsonspecversion}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -699,16 +697,33 @@
 
   </contributors>
 
-  <profiles>
-    <profile>
-      <id>doclint-java8-disable</id>
-      <activation>
-        <jdk>[1.8,)</jdk>
-      </activation>
-      <properties>
-        <checkstyle.version>2.17</checkstyle.version>
-        <javadoc.params>-Xdoclint:none</javadoc.params>
-      </properties>
-    </profile>
-  </profiles>
+    <profiles>
+        <profile>
+            <!-- Websocket module needs java 1.7 or higher -->
+            <id>jdk1.7+</id>
+            <activation>
+                <jdk>[1.7,)</jdk>
+            </activation>
+            <modules>
+                <module>johnzon-websocket</module>
+            </modules>
+            <properties>
+                <checkstyle.version>2.17</checkstyle.version>
+            </properties>
+        </profile>
+        <profile>
+            <!-- jsonb module needs java 1.8 or higher -->
+            <id>jdk1.8+</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <modules>
+              <module>johnzon-jsonb</module>
+            </modules>
+            <properties>
+                <checkstyle.version>2.17</checkstyle.version>
+                <javadoc.params>-Xdoclint:none</javadoc.params>
+            </properties>
+        </profile>
+    </profiles>
 </project>

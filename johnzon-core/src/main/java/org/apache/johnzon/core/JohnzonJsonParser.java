@@ -17,12 +17,6 @@
 package org.apache.johnzon.core;
 
 import java.math.BigDecimal;
-import java.util.Map;
-import java.util.stream.Stream;
-
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonValue;
 import javax.json.stream.JsonLocation;
 import javax.json.stream.JsonParser;
 
@@ -37,12 +31,13 @@ public interface JohnzonJsonParser extends JsonParser {
      * @return the _current_ Event. That's the one returned by the previous call to {@link #next()}
      *          but without propagating the Event pointer to the next entry.
      */
-    default Event current() {
-        throw new UnsupportedOperationException("getting the current JsonParser Event is not supported");
-    }
-
+    Event current();
 
     public static class JohnzonJsonParserWrapper implements JohnzonJsonParser {
+        public Event current() {
+            throw new UnsupportedOperationException("getting the current JsonParser Event is not supported");
+        }
+
         private final JsonParser jsonParser;
 
         public JohnzonJsonParserWrapper(JsonParser jsonParser) {
@@ -97,46 +92,6 @@ public interface JohnzonJsonParser extends JsonParser {
         @Override
         public void close() {
             jsonParser.close();
-        }
-
-        @Override
-        public JsonObject getObject() {
-            return jsonParser.getObject();
-        }
-
-        @Override
-        public JsonValue getValue() {
-            return jsonParser.getValue();
-        }
-
-        @Override
-        public JsonArray getArray() {
-            return jsonParser.getArray();
-        }
-
-        @Override
-        public Stream<JsonValue> getArrayStream() {
-            return jsonParser.getArrayStream();
-        }
-
-        @Override
-        public Stream<Map.Entry<String, JsonValue>> getObjectStream() {
-            return jsonParser.getObjectStream();
-        }
-
-        @Override
-        public Stream<JsonValue> getValueStream() {
-            return jsonParser.getValueStream();
-        }
-
-        @Override
-        public void skipArray() {
-            jsonParser.skipArray();
-        }
-
-        @Override
-        public void skipObject() {
-            jsonParser.skipObject();
         }
     }
 }

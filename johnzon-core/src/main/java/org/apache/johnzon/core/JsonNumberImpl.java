@@ -36,11 +36,6 @@ final class JsonNumberImpl implements JsonNumber, Serializable {
     }
 
     @Override
-    public Number numberValue() {
-        return value;
-    }
-
-    @Override
     public boolean isIntegral() {
         return value.scale() == 0;
     }

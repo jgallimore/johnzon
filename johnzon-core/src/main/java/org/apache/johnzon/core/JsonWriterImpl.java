@@ -21,7 +21,6 @@ package org.apache.johnzon.core;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonStructure;
-import javax.json.JsonValue;
 import javax.json.JsonWriter;
 import javax.json.stream.JsonGenerator;
 import java.io.Serializable;
@@ -49,16 +48,6 @@ class JsonWriterImpl implements JsonWriter, Serializable {
         checkClosed();
         try {
             generator.write(object);
-        } finally {
-            close();
-        }
-    }
-
-    @Override
-    public void write(final JsonValue value) {
-        checkClosed();
-        try {
-            generator.write(value);
         } finally {
             close();
         }

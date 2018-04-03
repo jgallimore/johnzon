@@ -40,7 +40,12 @@ public class JohnzonIgnoreNestedTest {
         to.person = from;
         to.persons = singletonList(from);
 
-        final Mapper mapper = new MapperBuilder().setAttributeOrder(Comparator.naturalOrder()).build();
+        final Mapper mapper = new MapperBuilder().setAttributeOrder(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        }).build();
         assertEquals("{\"name\":\"to\",\"person\":{\"name\":\"myname\"},\"persons\":[{\"name\":\"myname\"}]}", mapper.writeObjectAsString(to));
     }
 
