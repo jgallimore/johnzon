@@ -21,6 +21,7 @@ package org.apache.johnzon.mapper;
 import org.apache.johnzon.mapper.internal.JsonPointerTracker;
 import org.apache.johnzon.mapper.reflection.JohnzonCollectionType;
 
+import javax.json.JsonException;
 import javax.json.JsonReader;
 import javax.json.JsonReaderFactory;
 import javax.json.JsonValue;
@@ -136,13 +137,29 @@ public class Mapper implements Closeable {
         }
 
         final JsonGenerator generator = generatorFactory.createGenerator(stream(stream));
-
+        RuntimeException originalException = null;
         try {
+            writeObject(object, generator);
+        } catch (RuntimeException e) {
+            originalException = e;
+        } finally {
+            try {
+                generator.close();
+            } catch (JsonException e) {
+
+                if (originalException != null) {
+                    throw originalException;
+                } else {
+                    throw e;
+                }
+            }
+        }
+    }
+
+
+    private void writeObject(final Object object, final JsonGenerator generator) {
             writeObject(object, generator, null,
                     isDeduplicateObjects(object.getClass()) ? new JsonPointerTracker(null, "/") : null);
-        } finally {
-            generator.close();
-        }
     }
 
     private boolean isDeduplicateObjects(Class<?> rootType) {
