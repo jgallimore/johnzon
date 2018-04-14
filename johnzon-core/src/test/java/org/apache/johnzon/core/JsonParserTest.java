@@ -138,7 +138,6 @@ public class JsonParserTest {
             assertNotNull(event);
             assertEquals(JsonParser.Event.END_OBJECT, event);
         }
-
         {
             assertFalse(parser.hasNext());
         }
@@ -229,10 +228,6 @@ public class JsonParserTest {
         ab.add(new JsonNumberImpl(new BigDecimal(-2)));
         
         ob.add("d", ab);
-        ob.add ("e", Json.createObjectBuilder()
-                .add("x", 1)
-                .add("y", 2)
-                .build());
 
         final JsonParser parser = Json.createParserFactory(Collections.EMPTY_MAP).createParser(ob.build());
         assertNotNull(parser);
@@ -248,7 +243,7 @@ public class JsonParserTest {
     
     @Test
     public void simpleAttempting() {
-        final JsonParser parser = Json.createParser(new AttemptingInputStream("{\"a\":      \"b\",\"c\": 4,\"d\": [1,-2], \"e\":{\"x\":1,\"y\":2}}".getBytes(UTF_8)));
+        final JsonParser parser = Json.createParser(new AttemptingInputStream("{\"a\":      \"b\",\"c\": 4,\"d\": [1,-2]}".getBytes(UTF_8)));
         assertNotNull(parser);
         assertSimple(parser);
     }

@@ -222,7 +222,13 @@ public class ConfigurableJohnzonProvider<T> implements MessageBodyWriter<T>, Mes
         try {
             builder.setSerializeValueFilter(SerializeValueFilter.class.cast(
                     Thread.currentThread().getContextClassLoader().loadClass(val).getConstructor().newInstance()));
-        } catch (final InstantiationException | IllegalAccessException | NoSuchMethodException | ClassNotFoundException e) {
+        } catch (final InstantiationException e) {
+            throw new IllegalArgumentException(e);
+        } catch (final IllegalAccessException e) {
+            throw new IllegalArgumentException(e);
+        } catch (final NoSuchMethodException e) {
+            throw new IllegalArgumentException(e);
+        } catch (final ClassNotFoundException e) {
             throw new IllegalArgumentException(e);
         } catch (InvocationTargetException e) {
             throw new IllegalArgumentException(e.getCause());
