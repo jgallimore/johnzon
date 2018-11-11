@@ -69,6 +69,12 @@
     </snapshotRepository>
   </distributionManagement>
 
+  <scm>
+    <connection>scm:git:https://github.com/jgallimore/johnzon.git</connection>
+    <developerConnection>scm:git:https://github.com/jgallimore/johnzon.git</developerConnection>
+    <url>https://github.com/jgallimore/johnzon.git</url>
+  </scm>
+
   <modules>
     <module>johnzon-core</module>
     <module>johnzon-mapper</module>
