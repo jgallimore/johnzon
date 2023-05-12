@@ -26,7 +26,6 @@ import java.math.BigInteger;
 final class JsonNumberImpl implements JsonNumber, Serializable {
     private final BigDecimal value;
     private transient Integer hashCode = null;
-    private static final int MAX_BIG_DECIMAL_SCALE = toInt(System.getProperty("johnzon.max-big-decimal-scale", "1000"));
 
     JsonNumberImpl(final BigDecimal decimal) {
         if (decimal == null) {
@@ -70,13 +69,11 @@ final class JsonNumberImpl implements JsonNumber, Serializable {
 
     @Override
     public BigInteger bigIntegerValue() {
-        checkBigDecimalScale();
         return value.toBigInteger();
     }
 
     @Override
     public BigInteger bigIntegerValueExact() {
-        checkBigDecimalScale();
         return value.toBigIntegerExact();
     }
 
@@ -119,22 +116,5 @@ final class JsonNumberImpl implements JsonNumber, Serializable {
         if (value.remainder(BigDecimal.ONE).doubleValue() != 0) {
             throw new ArithmeticException("Not an int/long, use other value readers");
         }
-    }
-
-    private void checkBigDecimalScale() {
-        // should be fine enough. Maybe we should externalize so users can pick something better if they need to
-        // it becomes their responsibility to fix the limit and may expose them to a DoS attack
-        final int limit = MAX_BIG_DECIMAL_SCALE;
-        final int absScale = Math.abs(value.scale());
-
-        if (absScale > limit) {
-            throw new ArithmeticException(String.format(
-                "BigDecimal scale (%d) limit exceeds maximum allowed (%d)",
-                value.scale(), limit));
-        }
-    }
-
-    private static Integer toInt(final Object v) {
-        return !Integer.class.isInstance(v) ? Integer.parseInt(v.toString()) : Integer.class.cast(v);
     }
 }

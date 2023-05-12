@@ -81,7 +81,7 @@ public /* DON'T MAKE IT HIDDEN */ class MapperConfig implements Cloneable {
     private final Boolean deduplicateObjects;
     private final Map<Class<?>, Class<?>> interfaceImplementationMapping;
     private final boolean useBigDecimalForObjectNumbers;
-    private int maxBigDecimalScale;
+
     private final Function<String, Class<?>> typeLoader;
     private final Function<Class<?>, String> discriminatorMapper;
     private final Predicate<Class<?>> serializationPredicate;
@@ -118,7 +118,6 @@ public /* DON'T MAKE IT HIDDEN */ class MapperConfig implements Cloneable {
                         final Map<Class<?>, Class<?>> interfaceImplementationMapping,
                         final boolean useJsRange,
                         final boolean useBigDecimalForObjectNumbers,
-                        final int maxBigDecimalScale,
                         final boolean supportEnumMapDeserialization,
                         final Function<String, Class<?>> typeLoader,
                         final Function<Class<?>, String> discriminatorMapper,
@@ -130,7 +129,7 @@ public /* DON'T MAKE IT HIDDEN */ class MapperConfig implements Cloneable {
         this(adapters, objectConverterWriters, objectConverterReaders, version, close, skipNull, skipEmptyArray,
                 treatByteArrayAsBase64, treatByteArrayAsBase64URL, readAttributeBeforeWrite, accessMode, encoding,
                 attributeOrder, failOnUnknown, serializeValueFilter, useBigDecimalForFloats, deduplicateObjects, interfaceImplementationMapping,
-                useJsRange, useBigDecimalForObjectNumbers, maxBigDecimalScale, supportEnumMapDeserialization, typeLoader,
+                useJsRange, useBigDecimalForObjectNumbers, supportEnumMapDeserialization, typeLoader,
                 discriminatorMapper, discriminator, deserializationPredicate, serializationPredicate, enumConverterFactory,
                 JohnzonCores.snippetFactory(50, Json.createGeneratorFactory(emptyMap())), null);
     }
@@ -153,7 +152,6 @@ public /* DON'T MAKE IT HIDDEN */ class MapperConfig implements Cloneable {
                         final Map<Class<?>, Class<?>> interfaceImplementationMapping,
                         final boolean useJsRange,
                         final boolean useBigDecimalForObjectNumbers,
-                        final int maxBigDecimalScale,
                         final boolean supportEnumMapDeserialization,
                         final Function<String, Class<?>> typeLoader,
                         final Function<Class<?>, String> discriminatorMapper,
@@ -177,7 +175,6 @@ public /* DON'T MAKE IT HIDDEN */ class MapperConfig implements Cloneable {
         this.encoding = encoding;
         this.useJsRange = useJsRange;
         this.useBigDecimalForObjectNumbers = useBigDecimalForObjectNumbers;
-        this.maxBigDecimalScale = maxBigDecimalScale;
         this.supportEnumMapDeserialization = supportEnumMapDeserialization;
         this.typeLoader = typeLoader;
         this.discriminatorMapper = discriminatorMapper;
@@ -244,10 +241,6 @@ public /* DON'T MAKE IT HIDDEN */ class MapperConfig implements Cloneable {
 
     public boolean isUseBigDecimalForObjectNumbers() {
         return useBigDecimalForObjectNumbers;
-    }
-
-    public int getMaxBigDecimalScale() {
-        return maxBigDecimalScale;
     }
 
     public boolean isUseJsRange() {
